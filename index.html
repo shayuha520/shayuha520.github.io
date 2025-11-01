@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>满屏生日祝福便签</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日祝福</title>
     <style>
         body {
             margin: 0;
@@ -11,7 +12,6 @@
             font-family: "Microsoft YaHei", sans-serif;
             background: #fff8f0;
         }
-        /* 初始引导界面 */
         .guide {
             position: absolute;
             top: 0;
@@ -52,7 +52,6 @@
             transform: scale(1.08);
             box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
-        /* 满屏便签样式（固定尺寸，确保填满） */
         .note {
             position: absolute;
             padding: 12px 16px;
@@ -64,8 +63,8 @@
             transform: rotate(var(--rotate, 0deg)) scale(0);
             opacity: 0;
             transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            width: 120px; /* 固定宽度，适配12字话术 */
-            height: 40px; /* 固定高度，保证排列整齐 */
+            width: 120px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -79,7 +78,6 @@
         <button class="btn" id="startBtn">开启祝福</button>
     </div>
     <script>
-        // 12字生日祝福话术（每句严格12字，视觉统一）
         const birthdayTexts = [
             "愿你岁岁欢愉常伴左右",
             "祝你年年胜意满心欢喜",
@@ -107,35 +105,29 @@
             "愿你新岁多喜乐长安宁",
             "生日快乐万事顺遂无忧"
         ];
-        // 生日主题色（丰富色彩，填满更美观）
         const noteColors = [
             "#ffd6e0", "#ffebb7", "#c8f0e0", "#d0d9ff", 
             "#ffd9d0", "#e8dfff", "#ffead0", "#d0ffee",
             "#ffc8dd", "#f8edeb", "#e9edc9", "#dbeafe"
         ];
-        // 生成铺满全屏幕的均匀坐标（无空白）
         function getFullScreenPositions() {
             const positions = [];
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            const noteWidth = 150; // 便签总宽度（含padding）
-            const noteHeight = 70; // 便签总高度（含padding）
-            // 计算行列数，确保横向、纵向都填满
+            const noteWidth = 150;
+            const noteHeight = 70;
             const cols = Math.ceil(screenWidth / noteWidth);
             const rows = Math.ceil(screenHeight / noteHeight);
-            // 遍历每个网格，生成坐标
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     positions.push({
-                        x: j * noteWidth + 15, // 横向偏移，避免贴边
-                        y: i * noteHeight + 15  // 纵向偏移，避免贴边
+                        x: j * noteWidth + 15,
+                        y: i * noteHeight + 15
                     });
                 }
             }
-            // 筛选与话术数量匹配的坐标（确保不重复）
             return positions.slice(0, birthdayTexts.length);
         }
-        // 核心：隐藏引导+生成满屏便签
         document.getElementById('startBtn').addEventListener('click', () => {
             const guide = document.getElementById('guide');
             guide.style.opacity = '0';
@@ -144,32 +136,24 @@
                 createFullScreenNotes();
             }, 800);
         });
-        // 生成满屏便签（慢节奏，从中心向四周扩散）
         function createFullScreenNotes() {
             const allPositions = getFullScreenPositions();
             const screenCenterX = window.innerWidth / 2;
             const screenCenterY = window.innerHeight / 2;
-            // 按「距离屏幕中心由近到远」排序，实现扩散效果
             allPositions.sort((a, b) => {
                 const distA = Math.sqrt(Math.pow(a.x - screenCenterX, 2) + Math.pow(a.y - screenCenterY, 2));
                 const distB = Math.sqrt(Math.pow(b.x - screenCenterX, 2) + Math.pow(b.y - screenCenterY, 2));
                 return distA - distB;
             });
-            // 依次弹出便签（间隔400ms，慢且有序）
             allPositions.forEach((pos, index) => {
                 setTimeout(() => {
                     const note = document.createElement('div');
                     note.className = 'note';
-                    // 随机12字祝福
                     note.innerText = birthdayTexts[Math.floor(Math.random() * birthdayTexts.length)];
-                    // 随机主题色
                     note.style.background = noteColors[Math.floor(Math.random() * noteColors.length)];
-                    // 固定坐标（确保铺满无空白）
                     note.style.left = `${pos.x}px`;
                     note.style.top = `${pos.y}px`;
-                    // 轻微随机旋转（-10°到10°），避免死板
                     note.style.setProperty('--rotate', `${Math.random() * 20 - 10}deg`);
-                    // 触发弹出动画
                     note.style.transform = `rotate(var(--rotate)) scale(1)`;
                     note.style.opacity = '1';
                     document.body.appendChild(note);
